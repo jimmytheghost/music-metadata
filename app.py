@@ -72,7 +72,7 @@ def save():
             raise ValueError("Load a folder first")
         payload = json.loads(request.form["metadata"])
         album = payload["album"]
-        for field in ("album", "album_artist", "artist", "year", "genre"):
+        for field in ("album", "album_artist", "year", "genre"):
             album[field] = str(album.get(field, "")).strip()
         album["compilation"] = bool(album.get("compilation"))
         if not album["album"] or not album["album_artist"]:
@@ -85,7 +85,7 @@ def save():
         numbers = set()
         for track in tracks:
             track["title"] = str(track["title"]).strip()
-            track["artist"] = (str(track.get("artist", "")).strip() if album["compilation"] else album["artist"]) or album["artist"]
+            track["artist"] = str(track.get("artist", "")).strip() or album["album_artist"]
             track["number"] = int(track["number"])
             path = SESSION["folder"] / track["file"]
             if path.is_symlink() or path.resolve().parent != SESSION["folder"] or not path.is_file():

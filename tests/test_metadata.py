@@ -80,10 +80,28 @@ class MetadataTests(unittest.TestCase):
         self.assertEqual(self.path.read_bytes(), original)
 
     def test_reject_invalid_image_before_write(self):
-        SESSION.update(folder=self.folder, files={self.path.name})
+        SESSION.update(folder=self.folder.resolve(), files={self.path.name})
         response = self.client.post('/api/save', data={'metadata':json.dumps(dict(album=self.album, tracks=[self.track])), 'artwork':(io.BytesIO(b'not an image'), 'bad.jpg')}, headers=self.headers)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(self.path.read_bytes(), self.audio)
+
+    def test_track_artist_override_without_compilation(self):
+        SESSION.update(folder=self.folder.resolve(), files={self.path.name})
+        self.album.pop('artist')
+        self.track['artist'] = 'Test Artist feat. Guest'
+        def save():
+            return self.client.post('/api/save', data={'metadata':json.dumps(dict(album=self.album, tracks=[self.track]))}, headers=self.headers)
+        response = save()
+        self.assertEqual(response.status_code, 200, response.json)
+        self.assertTrue(response.json['results'][0]['ok'], response.json)
+        self.assertEqual(str(ID3(self.path)['TPE1']), 'Test Artist feat. Guest')
+        self.assertEqual(str(ID3(self.path)['TPE2']), 'Test Artist')
+        self.assertEqual(str(ID3(self.path)['TCMP']), '0')
+        self.track['artist'] = ' '
+        response = save()
+        self.assertEqual(response.status_code, 200, response.json)
+        self.assertTrue(response.json['results'][0]['ok'], response.json)
+        self.assertEqual(str(ID3(self.path)['TPE1']), 'Test Artist')
 
 
 if __name__ == '__main__':

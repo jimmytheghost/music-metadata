@@ -11,8 +11,8 @@ If macOS asks which app should open a `.command` file, select Terminal. If the b
 ## Workflow
 
 1. Browse for a folder, or paste its path, then load the MP3s. Subfolders and symbolic links are excluded.
-2. Enter the album title, track artist, album artist, release year, and optional genre. Album artist defaults to track artist when saving.
-3. For compilations, enable the checkbox, supply an album artist such as “Various Artists,” and edit each track’s artist. Blank per-track artists fall back to the shared track artist.
+2. Enter the album title, album artist, release year, and optional genre. Track artists default to the album artist and follow changes to it until individually overridden.
+3. Edit the artist beside any track to credit a feature or another artist. Blank track artists fall back to the album artist. The optional compilation checkbox sets the compilation tag independently of track credits.
 4. Select a JPEG, PNG, or WebP cover image. Uploaded artwork replaces existing cover images. Without a new image, each MP3 keeps its existing artwork.
 5. Review titles and numbers, then click **Save to MP3s**. The result reports successful and failed files individually.
 
