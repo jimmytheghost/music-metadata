@@ -1,0 +1,2 @@
+-r requirements.txt
+lameenc==1.8.1
