@@ -1,5 +1,9 @@
 const $ = id => document.getElementById(id);
-let tracks = [], busy = false, previewURL;
+let tracks = [], busy = false, previewURL, loadedFolder;
+const editedAlbumFields = new Set();
+['album','artist','album_artist','year','genre','compilation'].forEach(field => {
+  $(field).addEventListener('input', () => editedAlbumFields.add(field));
+});
 function status(message, error = false) { $('status').textContent = message; $('status').classList.toggle('error', error); }
 function setBusy(value) { busy = value; document.querySelectorAll('button,input').forEach(el => el.disabled = value); $('save').disabled = value || !tracks.length; }
 async function api(path, body) {
@@ -30,10 +34,17 @@ $('browse').onclick = async () => { setBusy(true); try { const data = await api(
 $('load').onclick = async () => {
   setBusy(true); status('Reading MP3s…');
   try {
-    const data = await api('/api/load', {folder:$('folder').value}); tracks = data.tracks; $('folder').value = data.folder;
+    const data = await api('/api/load', {folder:$('folder').value});
+    const previousTracks = new Map(loadedFolder === data.folder ? tracks.map(track => [track.file, track]) : []);
+    tracks = data.tracks.map(track => ({...track, ...previousTracks.get(track.file)}));
+    loadedFolder = data.folder;
+    $('folder').value = data.folder;
     const first = tracks[0] || {};
-    ['album','artist','album_artist','year','genre'].forEach(field => $(field).value = first[field] || '');
-    $('compilation').checked = tracks.some(t => t.compilation); clearArtwork(); render();
+    ['album','artist','album_artist','year','genre'].forEach(field => {
+      if (!editedAlbumFields.has(field) && !$(field).value.trim()) $(field).value = first[field] || '';
+    });
+    if (!editedAlbumFields.has('compilation')) $('compilation').checked = tracks.some(t => t.compilation);
+    render();
     status(data.errors.length ? `Skipped unreadable files:\n${data.errors.join('\n')}` : `${tracks.length} tracks loaded. Review the details, then save.`, !!data.errors.length);
   } catch(e) { status(e.message,true); } finally { setBusy(false); }
 };
