@@ -6,8 +6,10 @@ As of 2026-10-08, the first working version is complete. The owner has tried it 
 
 Music Metadata is a personal Mac tool for embedding metadata and cover artwork into MP3 deliverables. The owner's WAV files are the masters; MP3s are the deliverables and are intentionally modified in place. The tool exists because editing songs in Apple Music did not update the owner's original MP3 files as expected.
 
-Private GitHub repository: https://github.com/jimmytheghost/music-metadata
-Default branch: `main`. Existing changes have been committed and pushed. Inspect actual Git state before working; do not assume it is still clean or synchronized.
+GitHub repository: https://github.com/jimmytheghost/music-metadata
+Default branch: `main`. Inspect actual Git state before working; do not assume it is clean or synchronized.
+
+On 2026-10-20, the owner requested public-release preparation using the Agentic Toolkit. The README now follows its personal-tool sharing process, with an MIT license and an actual interface screenshot. Source-only sharing is the chosen preparation scope; no binary, release tag, or hosted site is required. Preparation alone does not authorize changing repository visibility or publishing a GitHub Release. Check actual visibility before describing the repository as public.
 
 ## Owner preferences and agreed scope
 
@@ -60,6 +62,8 @@ zsh -n launch.command kill.command
 git diff --check
 ```
 
+Public-release preparation on 2026-10-20: all six Python tests passed with Python 3.9.6; JavaScript and zsh syntax, README local links, ignore rules, and diff whitespace checks passed. The documentation screenshot shows an isolated instance of the actual app with no music loaded. A focused review covered tracked files and all 19 file versions reachable from the four existing commits; it found no credentials, private absolute paths, music, uploads, or runtime artifacts. This was a publication-material review, not a comprehensive security audit.
+
 At handoff all six Python tests passed. Artist inheritance and load-state preservation also received JavaScript smoke checks. There is no committed browser test suite; use focused UI verification for interaction changes rather than relying only on backend tests.
 
 Use temporary, generated MP3s for verification. On macOS resolve temporary folder paths before assigning `SESSION['folder']`; `/var` and `/private/var` can refer to the same place, while containment checks compare resolved paths.
@@ -70,6 +74,6 @@ Python changes need a server restart. Static changes need a browser refresh. Ref
 
 ## Future sessions
 
-Read this file and the relevant implementation before editing. Check Git status and preserve unrelated local changes. Treat the latest owner instruction as authoritative over these notes. Keep fixes focused, run checks appropriate to the changed behavior, and update these continuity notes when decisions change. The project has been kept synchronized with its private GitHub repository; preserve that workflow for requested project changes. Do not commit music, artwork uploads, credentials, virtual environments, or runtime artifacts.
+Read this file and the relevant implementation before editing. Check Git status and preserve unrelated local changes. Treat the latest owner instruction as authoritative over these notes. Keep fixes focused, run checks appropriate to the changed behavior, and update these continuity notes when decisions change. The project has been kept synchronized with its GitHub repository; preserve that workflow for requested project changes. Do not commit music, artwork uploads, credentials, virtual environments, or runtime artifacts.
 
 Possible future ideas such as pasted track lists, more audio formats, or native app packaging are unapproved options, not a backlog to implement automatically.

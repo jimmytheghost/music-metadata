@@ -1,39 +1,82 @@
 # Music Metadata
 
-A personal, local Mac tool for embedding album artwork and ID3 metadata directly into MP3 deliverables. No AI, account, or cloud service is involved in tagging.
+A local Mac tool for embedding album details and cover artwork directly into MP3 files.
 
-## Run
+I built this because editing songs in Apple Music wasn’t updating my original MP3s. My WAVs are the masters; the MP3s are the files I send out.
 
-Double-click **launch.command**. On first launch it creates a local Python environment and downloads dependencies; later launches reuse it. Requires Python 3.9 or newer. The browser opens automatically. Double-click **kill.command** to stop the server. Closing the browser does not stop it.
+This is a personal tool I’m sharing as it stands. If it’s useful, take it. If you want something different, fork it and have your agents, or yourself, make it work the way you want. There’s no promise of ongoing support or a release schedule. You don’t need to wait on me to change your copy.
 
-If macOS asks which app should open a `.command` file, select Terminal. If the browser does not open, the local address is in `.runtime/url`, and startup errors are in `.runtime/server.log`.
+![Music Metadata’s local browser interface, with album details, cover selection, and editable track credits](docs/images/music-metadata.png)
 
-## Workflow
+## What it does today
 
-1. Browse for a folder, or paste its path, then load the MP3s. Subfolders and symbolic links are excluded.
-2. Enter the album title, album artist, release year, and optional genre. Track artists default to the album artist and follow changes to it until individually overridden.
-3. Edit the artist beside any track to credit a feature or another artist. Blank track artists fall back to the album artist. The optional compilation checkbox sets the compilation tag independently of track credits.
-4. Select a JPEG, PNG, or WebP cover image. Uploaded artwork replaces existing cover images. Without a new image, each MP3 keeps its existing artwork.
-5. Review titles and numbers, then click **Save to MP3s**. The result reports successful and failed files individually.
+- Loads MP3s directly from a selected folder, using a Mac folder picker or a pasted path. Subfolders and symbolic links are skipped.
+- Reads existing tags and suggests editable titles and track numbers from filenames when tags are missing. `01-Crazy.mp3` becomes track 1, “Crazy”; `03-4thWave.mp3` becomes track 3, “4th Wave.”
+- Sets album title, album artist, release year, optional genre, and compilation status. Each song has its own editable artist credit.
+- Embeds JPEG, PNG, or WebP cover images as JPEG, with a maximum dimension of 2000 pixels. Without a selected image, each MP3 keeps its existing cover.
+- Writes ID3v2.3 tags without re-encoding audio or renaming files. WAV files stay untouched.
 
-**Saving modifies the source MP3s.** Your WAV masters are never edited. Filenames stay the same. Existing tags populate the form; untagged files use filename suggestions such as `01-Crazy.mp3` → track 1, “Crazy” and `03-4thWave.mp3` → track 3, “4th Wave.” Suggestions remain editable.
+**Saving modifies the selected MP3s in place.** Each file is staged and checked before atomic replacement. Results are reported per file; successful saves remain saved if another file fails. There’s no undo history or persistent backup.
 
-The app writes ID3v2.3 tags, including album, title, artist, album artist, track number/total, release year, genre, disc 1/1, compilation status, and cover artwork. Audio is not re-encoded. Artwork is converted to JPEG with a maximum dimension of 2000 pixels. Each file is staged and verified before atomic replacement; a failed file leaves its original intact. A batch is not an all-or-nothing transaction: successfully saved files remain saved if another file fails. No undo history or persistent backup is created.
+## Run it on your Mac
 
-The server listens only on your Mac at an automatically selected local port. One browser session and one album at a time are supported. Music apps may need to re-import previously cached files to display updated tags.
+Requires **macOS and Python 3.9 or newer**. This has been used and checked on the owner’s Mac, including checks with Python 3.9.6. Other platforms haven’t been verified; the folder picker and launch/stop scripts use macOS tools. This repository is distributed as source, with no packaged Mac app.
 
-## Development
+Clone the repository with Git:
+
+```sh
+git clone https://github.com/jimmytheghost/music-metadata.git
+cd music-metadata
+./launch.command
+```
+
+Or download and extract the source ZIP from GitHub’s **Code** menu, then double-click **launch.command**. On first launch, it creates a local Python environment and downloads dependencies. Later launches reuse it. The browser opens automatically.
+
+If macOS asks which app should open a `.command` file, select Terminal. If the browser doesn’t open, the address is in `.runtime/url`; startup errors are in `.runtime/server.log`.
+
+Double-click **kill.command** to stop the server. Closing the browser leaves it running. To update a Git checkout, finish saving, stop the server, run `git pull --ff-only`, and launch again. For a ZIP download, stop the old copy before opening a freshly extracted copy.
+
+## Use it
+
+1. Choose a folder or paste its path, then click **Load tracks**.
+2. Enter the album title and album artist. Release year and genre can be left blank. Track artists follow the album artist until individually overridden.
+3. Edit any song’s number, title, or artist. A blank track artist falls back to the album artist on save. **Compilation album** sets a separate tag and doesn’t control artist overrides.
+4. Optionally choose a cover image. A new image replaces existing embedded artwork in all loaded MP3s.
+5. Review the details, click **Save to MP3s**, and check the results.
+
+Loading tracks keeps entered album details, selected artwork, and your compilation choice. Reloading the same folder also keeps track edits matched by filename. Loading a different folder replaces the track list while keeping the album form.
+
+## Where it’s at
+
+This handles one album and one browser session at a time. Refreshing the page clears unsaved form changes; restarting the server clears its loaded folder. Music apps may need to re-import previously cached files to show updated tags.
+
+The server listens only on `127.0.0.1` at an automatically selected port. Tagging and artwork processing stay on your Mac, with no account, AI, external tagging service, or telemetry. Dependency installation needs internet access.
+
+Saved fields include album, title, artist, album artist, track number/total, release year, genre, disc 1/1, compilation status, and cover artwork. The scope is MP3 tagging; other audio formats, pasted track lists, and native app packaging aren’t implemented.
+
+## Make it yours
+
+Start with [AGENTS.md](AGENTS.md) for the behavior to preserve and the project’s working conventions.
+
+- [metadata.py](metadata.py): filename suggestions, image conversion, and ID3 writes.
+- [app.py](app.py): local server, folder loading, and save validation.
+- [static/app.js](static/app.js): form state and per-track artist inheritance.
+- [templates/index.html](templates/index.html) and [static/style.css](static/style.css): interface and layout.
+- [tests/test_metadata.py](tests/test_metadata.py): integration checks using generated MP3s.
+
+For development and verification:
 
 ```sh
 python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python app.py
 .venv/bin/python -m pip install -r requirements-dev.txt
 .venv/bin/python -m unittest discover -s tests -v
+node --check static/app.js
+zsh -n launch.command kill.command
+git diff --check
 ```
 
-Integration tests generate a tiny MP3 with the development-only LAME encoder. Your music files, virtual environment, and server runtime files are excluded from Git.
+Node.js is only needed for the JavaScript syntax check. Tests use the development-only LAME encoder to generate temporary audio. Use generated files for testing rather than your music collection.
 
-## Scope
+## License
 
-Initial version: personal Mac workflow, direct MP3 tagging, editable filename suggestions, one album per batch, optional compilation artists, and imported cover artwork. Future options can include pasted track lists, additional audio formats, and native app packaging.
+The code is [MIT licensed](LICENSE). You can use, copy, modify, and redistribute it under those terms; it comes with no warranty. Your music and artwork remain yours, and the code license grants no rights to third-party music or images. Dependencies retain their own licenses.
