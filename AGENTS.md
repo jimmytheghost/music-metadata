@@ -9,7 +9,7 @@ Music Metadata is a personal Mac tool for embedding metadata and cover artwork i
 GitHub repository: https://github.com/jimmytheghost/music-metadata
 Default branch: `main`. Inspect actual Git state before working; do not assume it is clean or synchronized.
 
-On 2026-10-20, the owner requested public-release preparation using the Agentic Toolkit. The README now follows its personal-tool sharing process, with an MIT license and an actual interface screenshot. Source-only sharing is the chosen preparation scope; no binary, release tag, or hosted site is required. Preparation alone does not authorize changing repository visibility or publishing a GitHub Release. Check actual visibility before describing the repository as public.
+On 2026-10-20, the owner requested public-release preparation using the Agentic Toolkit. The README now follows its personal-tool sharing process, with an MIT license and an actual interface screenshot. Source-only sharing is the chosen preparation scope; no binary, release tag, or hosted site is required. Preparation alone does not authorize changing repository visibility or publishing a GitHub Release. Check actual visibility before describing the repository as public. The owner subsequently authorized publication on 2026-10-20. Repository visibility was changed to public and anonymous access to the repository and README was verified. No GitHub Release or binary was published.
 
 ## Owner preferences and agreed scope
 
